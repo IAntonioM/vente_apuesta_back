@@ -10,7 +10,7 @@ use App\Http\Controllers\SaldoController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\UserJuegoController;
 use App\Http\Controllers\VentaController;
-
+use Illuminate\Support\Facades\Response;
 // /api/auth
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
@@ -50,4 +50,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user-juego/{juego_id}', [UserJuegoController::class, 'obtenerNivel']);
     Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
     Route::get('/userJuego', [UserJuegoController::class, 'listarNivelesUsuario']);
+});
+
+
+Route::get('/imagenes/{filename}', function ($filename) {
+    $path = storage_path('app/public/images/' . $filename);
+
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    $mimeType = mime_content_type($path);
+    return Response::make(file_get_contents($path), 200)
+                   ->header("Content-Type", $mimeType);
 });

@@ -18,6 +18,7 @@ class Userss extends Authenticatable
         'nro_cuenta',
         'cel',
         'password',
+        'rol',
         'bancoId'
     ];
 
