@@ -11,12 +11,13 @@ class TransaccionService
 {
     public function crearTransaccion(array $data)
     {
-        $userId      = $data['userId'];
-        $tipo        = $data['tipo'];
-        $monto       = $data['monto'];
-        $metodoPago  = $data['metodo_pago'];
-        $referencia  = $data['referencia'];
-        $observacion = $data['observacion'];
+        $userId          = $data['userId'];
+        $tipo            = $data['tipo'];
+        $monto           = $data['monto'];
+        $metodoPago      = $data['metodo_pago'];
+        $referencia      = $data['referencia'];
+        $observacion     = $data['observacion'];
+        $tragTransaccion = $data['trag_transaccion'] ?? 0; // Valor por defecto 0
 
         if (!in_array($tipo, ['DEPOSITO', 'RETIRO'])) {
             throw new Exception("Tipo de transacción no válido");
@@ -46,18 +47,18 @@ class TransaccionService
             $saldo->save();
 
             $transaccion = Transaccion::create([
-                'userId'      => $userId,
-                'tipo'         => $tipo,
-                'monto'        => $monto,
-                'metodo_pago'  => $metodoPago,
-                'referencia'   => $referencia,
-                'observacion'  => $observacion,
-                'estado'       => 'APROBADO'
+                'userId'           => $userId,
+                'tipo'             => $tipo,
+                'monto'            => $monto,
+                'metodo_pago'      => $metodoPago,
+                'referencia'       => $referencia,
+                'observacion'      => $observacion,
+                'trag_transaccion' => $tragTransaccion,
+                'estado'           => 'APROBADO'
             ]);
 
             DB::commit();
             return $transaccion;
-
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

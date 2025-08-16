@@ -26,6 +26,7 @@ class TransaccionController extends Controller
                 'metodo_pago' => $request->input('metodo_pago'),
                 'referencia'  => $request->input('referencia'),
                 'observacion' => $request->input('observacion'),
+                'trag_transaccion' => 1,
             ];
 
             $transaccion = $this->transaccionService->crearTransaccion($data);
@@ -45,7 +46,8 @@ class TransaccionController extends Controller
                 'monto'       => $request->input('monto'),
                 'metodo_pago' => $request->input('metodo_pago'),
                 'observacion' => $request->input('observacion'),
-                'referencia' => '',
+                'trag_transaccion' => 1,
+                'referencia'  => $request->input('referencia'),
             ];
 
             $transaccion = $this->transaccionService->crearTransaccion($data);

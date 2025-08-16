@@ -54,13 +54,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::get('/imagenes/{filename}', function ($filename) {
-    $path = storage_path('app/public/images/' . $filename);
+    $path = public_path($filename); // <-- apunta a public/imagenes
 
     if (!file_exists($path)) {
         abort(404);
     }
 
     $mimeType = mime_content_type($path);
-    return Response::make(file_get_contents($path), 200)
-                   ->header("Content-Type", $mimeType);
+    return response()->file($path, [
+        'Content-Type' => $mimeType
+    ]);
 });
