@@ -17,7 +17,7 @@ class TransaccionService
         $metodoPago      = $data['metodo_pago'];
         $referencia      = $data['referencia'];
         $observacion     = $data['observacion'];
-        $tragTransaccion = $data['trag_transaccion'] ?? 0; // Valor por defecto 0
+        $flag_transaccion = $data['flag_transaccion'] ?? 0; // Valor por defecto 0
 
         if (!in_array($tipo, ['DEPOSITO', 'RETIRO'])) {
             throw new Exception("Tipo de transacción no válido");
@@ -53,7 +53,7 @@ class TransaccionService
                 'metodo_pago'      => $metodoPago,
                 'referencia'       => $referencia,
                 'observacion'      => $observacion,
-                'trag_transaccion' => $tragTransaccion,
+                'flag_transaccion' => $flag_transaccion,
                 'estado'           => 'APROBADO'
             ]);
 

@@ -54,7 +54,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="cantidad" class="form-label">Cantidad en Stock</label>
                                     <input type="number"
@@ -70,6 +70,45 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="n_ronda" class="form-label">Número de Ronda</label>
+                                    <select class="form-select @error('n_ronda') is-invalid @enderror"
+                                            id="n_ronda"
+                                            name="n_ronda"
+                                            required>
+                                        <option value="">Seleccionar ronda</option>
+                                        @for ($i = 1; $i <= 15; $i++)
+                                            <option value="{{ $i }}" {{ old('n_ronda') == $i ? 'selected' : '' }}>
+                                                Ronda {{ $i }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                    @error('n_ronda')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="flag_mayor" class="form-label">Si es Mayor a Rango</label>
+                                    <select class="form-select @error('flag_mayor') is-invalid @enderror"
+                                            id="flag_mayor"
+                                            name="flag_mayor"
+                                            required>
+                                        <option value="">Seleccionar tipo</option>
+                                        <option value="1" {{ old('flag_mayor') == '1' ? 'selected' : '' }}>Si</option>
+                                        <option value="0" {{ old('flag_mayor') == '0' ? 'selected' : '' }}>No</option>
+                                    </select>
+                                    @error('flag_mayor')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="imagen" class="form-label">Imagen del Producto</label>
@@ -85,12 +124,14 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label for="preview" class="form-label">Vista previa</label>
-                            <div id="preview-container" class="d-none">
-                                <img id="image-preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="preview" class="form-label">Vista previa</label>
+                                    <div id="preview-container" class="d-none">
+                                        <img id="image-preview" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

@@ -10,6 +10,8 @@ use App\Http\Controllers\SaldoController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\UserJuegoController;
 use App\Http\Controllers\VentaController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 // /api/auth
 Route::prefix('auth')->group(function () {
@@ -20,6 +22,46 @@ Route::prefix('auth')->group(function () {
 // /api/bancos
 Route::prefix('bancos')->group(function () {
     Route::get('/', [BancoController::class, 'getBancosActivos']);
+});
+Route::get('/generate-storage-link', function () {
+
+    // Definir las rutas correctas para tu estructura
+    $publicPath = base_path('../public_html/storage');
+    $storagePath = storage_path('app/public');
+
+    // Verificar si ya existe
+    if (File::exists($publicPath)) {
+        return 'El enlace simbólico ya existe en: ' . url('/storage');
+    }
+
+    try {
+        // Intentar crear el enlace simbólico manualmente
+        if (!File::exists($storagePath)) {
+            return 'Error: No existe la carpeta storage/app/public';
+        }
+
+        // Crear el enlace simbólico
+        if (symlink($storagePath, $publicPath)) {
+            return 'El enlace simbólico se creó correctamente. Accede en: ' . url('/storage');
+        } else {
+            return 'No se pudo crear el enlace simbólico. Problema de permisos.';
+        }
+
+    } catch (Exception $e) {
+        // Si falla, intentar con artisan
+        try {
+            Artisan::call('storage:link');
+
+            if (File::exists(public_path('storage'))) {
+                return 'El enlace se creó con artisan pero en ubicación incorrecta. Muévelo manualmente.';
+            }
+
+            return 'Error con artisan: ' . $e->getMessage();
+
+        } catch (Exception $e2) {
+            return 'Error: ' . $e2->getMessage();
+        }
+    }
 });
 
 // Rutas protegidas con middleware auth:sanctum

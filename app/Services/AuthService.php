@@ -21,8 +21,8 @@ class AuthService
 
         // Validar banco activo
         $banco = Banco::where('id', $data['bancoId'])
-                      ->where('estado', true)
-                      ->first();
+            ->where('estado', true)
+            ->first();
 
         if (!$banco) {
             throw new Exception("El banco no existe o está inactivo");
@@ -30,13 +30,16 @@ class AuthService
 
         // Crear usuario
         $user = Userss::create([
-            'nombres_apellidos' => $data['nombres_apellidos'],
-            'correo'            => $data['correo'],
-            'nro_cuenta'        => $data['nro_cuenta'],
-            'bancoId'           => $data['bancoId'],
-            'cel'               => $data['cel'],
-            'password'          => Hash::make($data['password']),
+            'nombres_apellidos'  => $data['nombres_apellidos'],
+            'correo'             => $data['correo'],
+            'nro_cuenta'         => $data['nro_cuenta'],
+            'bancoId'            => $data['bancoId'],
+            'cel'                => $data['cel'],
+            'password'           => Hash::make($data['password']),
+            'flag_ronda_1'       => 1, // valor por defecto
+            'flag_puede_retirar' => 0  // valor por defecto
         ]);
+
 
         // Crear saldo inicial si no existe
         $saldo = SaldoUsuario::firstOrCreate(

@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\ControllersWeb;
+
 use App\Http\Controllers\Controller;
 
 use App\Models\Venta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
 class TiendaController extends Controller
 {
     /**
@@ -21,9 +21,22 @@ class TiendaController extends Controller
             $query->where('nombre', 'like', '%' . $request->nombre . '%');
         }
 
+        // Filtro por n_ronda
+        if ($request->filled('n_ronda')) {
+            $query->where('n_ronda', $request->n_ronda);
+        }
+
+        // Filtro por flag_mayor
+        if ($request->filled('flag_mayor')) {
+            $query->where('flag_mayor', $request->flag_mayor === '1');
+        }
+
         $productos = $query->orderBy('created_at', 'desc')->get();
 
-        return view('tienda.index', compact('productos'));
+        // Obtener todas las rondas disponibles para el filtro
+        $rondas = Venta::distinct()->orderBy('n_ronda')->pluck('n_ronda');
+
+        return view('tienda.index', compact('productos', 'rondas'));
     }
 
     /**
@@ -43,23 +56,25 @@ class TiendaController extends Controller
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
             'cantidad' => 'required|integer|min:0',
+            'n_ronda' => 'required|integer|min:1|max:15',
+            'flag_mayor' => 'required|boolean',
             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $imagePath = null;
 
         if ($request->hasFile('imagen')) {
-            $image = $request->file('imagen');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images'), $imageName);
-            $imagePath = '/images/' . $imageName;
+            // Guarda en storage/app/public/images
+            $imagePath = $request->file('imagen')->store('images', 'public');
         }
 
         Venta::create([
             'nombre' => $request->nombre,
             'precio' => $request->precio,
             'cantidad' => $request->cantidad,
-            'img_url' => $imagePath
+            'n_ronda' => $request->n_ronda,
+            'flag_mayor' => $request->flag_mayor,
+            'img_url' => $imagePath // Guarda "images/xxx.png"
         ]);
 
         return redirect()->route('tienda.index')->with('success', 'Producto creado exitosamente.');
@@ -90,28 +105,30 @@ class TiendaController extends Controller
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
             'cantidad' => 'required|integer|min:0',
+            'n_ronda' => 'required|integer|min:1|max:15',
+            'flag_mayor' => 'required|boolean',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $imagePath = $tienda->img_url;
 
         if ($request->hasFile('imagen')) {
-            // Eliminar imagen anterior si existe
-            if ($tienda->img_url && file_exists(public_path($tienda->img_url))) {
-                unlink(public_path($tienda->img_url));
+            // Eliminar imagen anterior si existe en storage
+            if ($tienda->img_url && Storage::disk('public')->exists($tienda->img_url)) {
+                Storage::disk('public')->delete($tienda->img_url);
             }
 
-            $image = $request->file('imagen');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images'), $imageName);
-            $imagePath = '/images/' . $imageName;
+            // Guardar nueva imagen en storage/app/public/images
+            $imagePath = $request->file('imagen')->store('images', 'public');
         }
 
         $tienda->update([
             'nombre' => $request->nombre,
             'precio' => $request->precio,
             'cantidad' => $request->cantidad,
-            'img_url' => $imagePath
+            'n_ronda' => $request->n_ronda,
+            'flag_mayor' => $request->flag_mayor,
+            'img_url' => $imagePath // Solo guarda "images/nombre.png"
         ]);
 
         return redirect()->route('tienda.index')->with('success', 'Producto actualizado exitosamente.');
@@ -122,9 +139,9 @@ class TiendaController extends Controller
      */
     public function destroy(Venta $tienda)
     {
-        // Eliminar imagen si existe
-        if ($tienda->img_url && file_exists(public_path($tienda->img_url))) {
-            unlink(public_path($tienda->img_url));
+        // Eliminar imagen si existe - Corregido para usar Storage consistentemente
+        if ($tienda->img_url && Storage::disk('public')->exists($tienda->img_url)) {
+            Storage::disk('public')->delete($tienda->img_url);
         }
 
         $tienda->delete();

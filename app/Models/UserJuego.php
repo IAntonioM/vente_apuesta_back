@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserJuego extends Model
 {
-    protected $table = 'userJuegos';
+    protected $table = 'userjuegos';
 
     protected $fillable = [
         'user_id',
         'juego_id',
-        'nivel_actual'
+        'nivel_actual',
+        'ronda_actual', // 👈 agrega esto
     ];
 
     public function usuario()

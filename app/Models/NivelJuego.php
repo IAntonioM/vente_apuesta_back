@@ -15,13 +15,15 @@ class NivelJuego extends Model
         'multiplicador',
         'tiempo',
         'estado',
-        'createdAt'
+        'createdAt',
+        'ronda'   // nuevo campo
     ];
 
     protected $casts = [
         'estado' => 'boolean',
         'multiplicador' => 'decimal:2',
         'createdAt' => 'datetime',
+        'ronda' => 'integer', // casteo para que siempre sea int en PHP
     ];
 
     public function juego()
@@ -29,3 +31,4 @@ class NivelJuego extends Model
         return $this->belongsTo(Juego::class, 'juegoId');
     }
 }
+

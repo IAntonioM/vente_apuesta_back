@@ -95,64 +95,88 @@
             </div>
         </div>
 
-        <!-- Filtros y búsqueda -->
-        <div class="card shadow mb-4" style="zoom: 90%;">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Filtros de Búsqueda</h6>
+<!-- Filtros y búsqueda -->
+<div class="card shadow mb-4" style="zoom: 90%;">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Filtros de Búsqueda</h6>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ route('principal') }}">
+            <!-- Primera fila: Búsqueda general -->
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="search" class="form-label">Búsqueda General</label>
+                    <input type="text" class="form-control" id="search" name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Buscar por usuario, referencia, método de pago...">
+                </div>
             </div>
-            <div class="card-body">
-                <form method="GET" action="{{ route('principal') }}">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="search" class="form-label">Búsqueda</label>
-                            <input type="text" class="form-control" id="search" name="search"
-                                value="{{ request('search') }}" placeholder="Buscar por usuario, referencia, método...">
-                        </div>
 
-                        <div class="col-md-3 mb-3">
-                            <label for="tipo" class="form-label">Tipo de Transacción</label>
-                            <select class="form-control" id="tipo" name="tipo">
-                                <option value="TODOS" {{ request('tipo') == 'TODOS' ? 'selected' : '' }}>Todos</option>
-                                <option value="DEPOSITO" {{ request('tipo') == 'DEPOSITO' ? 'selected' : '' }}>Depósitos
-                                </option>
-                                <option value="RETIRO" {{ request('tipo') == 'RETIRO' ? 'selected' : '' }}>Retiros</option>
-                            </select>
-                        </div>
+            <!-- Segunda fila: Filtros principales -->
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="tipo" class="form-label">Tipo de Transacción</label>
+                    <select class="form-control" id="tipo" name="tipo">
+                        <option value="TODOS" {{ request('tipo') == 'TODOS' ? 'selected' : '' }}>Todos</option>
+                        <option value="DEPOSITO" {{ request('tipo') == 'DEPOSITO' ? 'selected' : '' }}>Depósitos</option>
+                        <option value="RETIRO" {{ request('tipo') == 'RETIRO' ? 'selected' : '' }}>Retiros</option>
+                    </select>
+                </div>
 
-                        <div class="col-md-3 mb-3">
-                            <label for="estado" class="form-label">Estado</label>
-                            <select class="form-control" id="estado" name="estado">
-                                <option value="TODOS" {{ request('estado') == 'TODOS' ? 'selected' : '' }}>Todos</option>
-                                <option value="PENDIENTE" {{ request('estado') == 'PENDIENTE' ? 'selected' : '' }}>
-                                    Pendiente</option>
-                                <option value="APROBADO" {{ request('estado') == 'APROBADO' ? 'selected' : '' }}>Aprobado
-                                </option>
-                                <option value="RECHAZADO" {{ request('estado') == 'RECHAZADO' ? 'selected' : '' }}>
-                                    Rechazado</option>
-                            </select>
-                        </div>
+                <div class="col-md-3 mb-3">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select class="form-control" id="estado" name="estado">
+                        <option value="TODOS" {{ request('estado') == 'TODOS' ? 'selected' : '' }}>Todos</option>
+                        <option value="PENDIENTE" {{ request('estado') == 'PENDIENTE' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="APROBADO" {{ request('estado') == 'APROBADO' ? 'selected' : '' }}>Aprobado</option>
+                        <option value="RECHAZADO" {{ request('estado') == 'RECHAZADO' ? 'selected' : '' }}>Rechazado</option>
+                    </select>
+                </div>
 
-                        <!-- Nuevo filtro flag_transaccion -->
-                        <div class="col-md-2 mb-3 d-flex align-items-center">
-                            <div class="form-check mt-4">
-                                <input class="form-check-input" type="checkbox" value="1" id="flag_transaccion"
-                                    name="flag_transaccion" {{ request('flag_transaccion') == '1' ? 'checked' : '' }}>
-                                <label class="form-check-label" for="flag_transaccion">
-                                    Transacciones Reales
-                                </label>
-                            </div>
-                        </div>
+                <div class="col-md-3 mb-3">
+                    <label for="fecha_desde" class="form-label">Fecha Desde</label>
+                    <input type="date" class="form-control" id="fecha_desde" name="fecha_desde"
+                        value="{{ request('fecha_desde') }}">
+                </div>
 
-                        <div class="col-md-2 mb-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-search"></i> Buscar
-                            </button>
-                        </div>
+                <div class="col-md-3 mb-3">
+                    <label for="fecha_hasta" class="form-label">Fecha Hasta</label>
+                    <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta"
+                        value="{{ request('fecha_hasta') }}">
+                </div>
+            </div>
+
+            <!-- Tercera fila: Opciones adicionales y botones -->
+            <div class="row align-items-end">
+                <div class="col-md-4 mb-3">
+                    <div class="form-check" style="padding-top: 8px;">
+                        <input class="form-check-input" type="checkbox" value="1" id="flag_transaccion"
+                            name="flag_transaccion" {{ request('flag_transaccion') == '1' ? 'checked' : '' }}>
+                        <label class="form-check-label" for="flag_transaccion">
+                            <strong>Solo Transacciones Reales</strong>
+                        </label>
                     </div>
-                </form>
-            </div>
-        </div>
+                </div>
 
+                <div class="col-md-4 mb-3">
+                    <!-- Espacio vacío para equilibrar el diseño -->
+                </div>
+
+                <div class="col-md-2 mb-3">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                </div>
+
+                <div class="col-md-2 mb-3">
+                    <a href="{{ route('principal') }}" class="btn btn-outline-secondary btn-block">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
         <!-- Tabla de transacciones -->
         <div class="card shadow mb-4">

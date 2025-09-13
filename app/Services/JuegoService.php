@@ -15,9 +15,9 @@ public function getAllJuegosActivos(int $userId)
 {
     try {
         $juegos = DB::table('juegos')
-            ->leftJoin('userJuegos', function ($join) use ($userId) {
-                $join->on('juegos.id', '=', 'userJuegos.juego_id')
-                     ->where('userJuegos.user_id', '=', $userId);
+            ->leftJoin('userjuegos', function ($join) use ($userId) {
+                $join->on('juegos.id', '=', 'userjuegos.juego_id')
+                     ->where('userjuegos.user_id', '=', $userId);
             })
             ->where('juegos.estado', true)
             ->select(
@@ -26,7 +26,8 @@ public function getAllJuegosActivos(int $userId)
                 'juegos.descripcion',
                 'juegos.estado',
                 'juegos.createdAt as created_at',
-                DB::raw('COALESCE(userJuegos.nivel_actual, 1) as nivel_actual')
+                DB::raw('COALESCE(userjuegos.nivel_actual, 1) as nivel_actual'),
+                DB::raw('COALESCE(userjuegos.ronda_actual, 1) as ronda_actual') // 👈 agregado
             )
             ->orderBy('juegos.nombre', 'ASC')
             ->get();

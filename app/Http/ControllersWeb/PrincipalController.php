@@ -31,6 +31,7 @@ class PrincipalController extends Controller
                     ->orWhere('monto', 'LIKE', "%{$searchTerm}%");
             });
         }
+
         // Filtro por flag_transaccion
         if ($request->filled('flag_transaccion')) {
             $query->where('flag_transaccion', $request->flag_transaccion);
@@ -41,22 +42,44 @@ class PrincipalController extends Controller
             $query->where('estado', $request->estado);
         }
 
+        // Filtro por fecha desde
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('created_at', '>=', $request->fecha_desde);
+        }
+
+        // Filtro por fecha hasta
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('created_at', '<=', $request->fecha_hasta);
+        }
+
         // Ordenar por fecha más reciente
         $query->orderBy('created_at', 'desc');
 
         // Paginación
         $transacciones = $query->paginate(15)->withQueryString();
 
-        // Estadísticas básicas
-        $totalDepositos = Transaccion::where('tipo', 'DEPOSITO')
+        // Estadísticas básicas (puedes aplicar los mismos filtros de fecha aquí si lo deseas)
+        $statsQuery = Transaccion::query();
+
+        // Aplicar filtros de fecha a las estadísticas también
+        if ($request->filled('fecha_desde')) {
+            $statsQuery->whereDate('created_at', '>=', $request->fecha_desde);
+        }
+        if ($request->filled('fecha_hasta')) {
+            $statsQuery->whereDate('created_at', '<=', $request->fecha_hasta);
+        }
+
+        $totalDepositos = (clone $statsQuery)
+            ->where('tipo', 'DEPOSITO')
             ->where('estado', 'APROBADO')
             ->sum('monto');
 
-        $totalRetiros = Transaccion::where('tipo', 'RETIRO')
+        $totalRetiros = (clone $statsQuery)
+            ->where('tipo', 'RETIRO')
             ->where('estado', 'APROBADO')
             ->sum('monto');
 
-        $totalTransacciones = Transaccion::count();
+        $totalTransacciones = $query->count();
 
         return view('admin.principal', compact(
             'transacciones',
