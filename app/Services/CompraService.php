@@ -53,10 +53,12 @@ class CompraService
             if ($saldo->saldo < $total) {
                 throw new Exception('Saldo insuficiente para completar la compra');
             }
-
+            $monto_compra   = $venta->precio * $cantidad;
+            $monto_ganancia = $venta->ganancia * $cantidad;
+            $monto_venta    = $monto_compra + $monto_ganancia;
             // 6. Restar saldo
-            $saldo->saldo -= $total;
-            $saldo->save();
+            //  $saldo->saldo -= $total;
+            //  $saldo->save();
 
             // 7. Reducir stock
             $venta->cantidad -= $cantidad;
@@ -81,7 +83,10 @@ class CompraService
                 'cantidad'      => $cantidad,
                 'precio_unitario' => $venta->precio,
                 'total'         => $total,
-                'fecha' => now(),  // Asignar la fecha actual
+                'fecha' => now(),
+                'monto_compra'   => $monto_compra,
+                'monto_ganancia' => $monto_ganancia,
+                'monto_venta'    => $monto_venta,
             ]);
 
             // 10. Retornar con datos extra

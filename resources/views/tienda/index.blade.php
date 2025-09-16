@@ -23,20 +23,33 @@
                     <div class="col-12">
                         <form method="GET" action="{{ route('tienda.index') }}" class="row g-3">
                             <!-- Búsqueda por nombre -->
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="nombre" class="form-label">Buscar por nombre</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre"
                                     placeholder="Buscar producto..." value="{{ request('nombre') }}">
                             </div>
 
                             <!-- Filtro por ronda -->
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="n_ronda" class="form-label">Filtrar por Ronda</label>
                                 <select class="form-select" id="n_ronda" name="n_ronda">
                                     <option value="">Todas las rondas</option>
                                     @for ($i = 1; $i <= 15; $i++)
                                         <option value="{{ $i }}" {{ request('n_ronda') == $i ? 'selected' : '' }}>
                                             Ronda {{ $i }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+
+                            <!-- Filtro por nivel -->
+                            <div class="col-md-2">
+                                <label for="nivel" class="form-label">Filtrar por Nivel</label>
+                                <select class="form-select" id="nivel" name="nivel">
+                                    <option value="">Todos los niveles</option>
+                                    @for ($i = 1; $i <= 10; $i++)
+                                        <option value="{{ $i }}" {{ request('nivel') == $i ? 'selected' : '' }}>
+                                            Nivel {{ $i }}
                                         </option>
                                     @endfor
                                 </select>
@@ -59,7 +72,7 @@
                                     <button class="btn btn-primary" type="submit">
                                         <i class="fas fa-search"></i> Buscar
                                     </button>
-                                    @if (request()->hasAny(['nombre', 'n_ronda', 'flag_mayor']))
+                                    @if (request()->hasAny(['nombre', 'n_ronda', 'nivel', 'flag_mayor']))
                                         <a href="{{ route('tienda.index') }}" class="btn btn-outline-secondary">
                                             <i class="fas fa-times"></i>
                                         </a>
@@ -71,7 +84,7 @@
                 </div>
 
                 <!-- Indicadores de filtros activos -->
-                @if (request()->hasAny(['nombre', 'n_ronda', 'flag_mayor']))
+                @if (request()->hasAny(['nombre', 'n_ronda', 'nivel', 'flag_mayor']))
                     <div class="row mb-3">
                         <div class="col-12">
                             <div class="d-flex flex-wrap gap-2">
@@ -88,6 +101,14 @@
                                     <span class="badge bg-info">
                                         Ronda: {{ request('n_ronda') }}
                                         <a href="{{ request()->fullUrlWithQuery(['n_ronda' => null]) }}" class="text-white ms-1">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    </span>
+                                @endif
+                                @if (request('nivel'))
+                                    <span class="badge bg-warning">
+                                        Nivel: {{ request('nivel') }}
+                                        <a href="{{ request()->fullUrlWithQuery(['nivel' => null]) }}" class="text-white ms-1">
                                             <i class="fas fa-times"></i>
                                         </a>
                                     </span>
@@ -116,8 +137,9 @@
                                         <th>Nombre</th>
                                         <th>Precio</th>
                                         <th>Cantidad</th>
-                                        <th>Ronda</th>
+                                        <th>Ronda - Nivel</th>
                                         <th>Mayor a su ronda</th>
+                                        <th>Ganancia</th>
                                         <th>Creado</th>
                                         <th>Acciones</th>
                                     </tr>
@@ -148,12 +170,20 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-primary">{{ $producto->n_ronda }}</span>
+                                                <span class="badge bg-primary">R{{ $producto->n_ronda }}</span>
+                                                <span class="badge bg-secondary">N{{ $producto->nivel }}</span>
                                             </td>
                                             <td>
                                                 <span class="badge {{ $producto->flag_mayor ? 'bg-warning' : 'bg-info' }}">
                                                     {{ $producto->flag_mayor ? 'Si' : 'No' }}
                                                 </span>
+                                            </td>
+                                            <td>
+                                                @if($producto->ganancia)
+                                                    ${{ number_format($producto->ganancia, 2) }}
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                             <td>{{ $producto->created_at->format('d/m/Y H:i') }}</td>
                                             <td>
@@ -182,7 +212,7 @@
                                     @empty
                                         <tr>
                                             <td colspan="9" class="text-center">
-                                                @if (request()->hasAny(['nombre', 'n_ronda', 'flag_mayor']))
+                                                @if (request()->hasAny(['nombre', 'n_ronda', 'nivel', 'flag_mayor']))
                                                     No se encontraron productos con los filtros aplicados
                                                     <br>
                                                     <a href="{{ route('tienda.index') }}"

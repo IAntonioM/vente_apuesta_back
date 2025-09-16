@@ -16,26 +16,53 @@ class TransaccionController extends Controller
         $this->transaccionService = $transaccionService;
     }
 
-    // DEPÓSITO
-    public function crearDeposito(Request $request)
-    {
-        try {
-            $data = [
-                'userId'      => $request->user()->id,
-                'tipo'        => 'DEPOSITO',
-                'monto'       => $request->input('monto'),
-                'metodo_pago' => $request->input('metodo_pago'),
-                'referencia'  => $request->input('referencia'),
-                'observacion' => $request->input('observacion'),
-                'flag_transaccion' => 1,
-            ];
+// DEPÓSITO
+public function crearDeposito(Request $request)
+{
+    try {
+        $user = $request->user();
 
-            $transaccion = $this->transaccionService->crearTransaccion($data);
-            return response()->json($transaccion, 201);
-        } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage() ?? 'Error al registrar depósito'], 400);
+        $montoDeposito = $request->input('monto');
+
+        // ✅ Validar que el monto a depositar sea mayor o igual al último retiro
+        if ($montoDeposito < $user->ultimo_retiro) {
+            return response()->json([
+                'success' => false,
+                'message' => "El monto a depositar debe ser mayor o igual a tu último retiro ({$user->ultimo_retiro}).",
+                'ultimo_retiro' => $user->ultimo_retiro,
+                'monto_ingresado' => $montoDeposito
+            ], 422); // 422 = Unprocessable Entity
         }
+
+        $data = [
+            'userId'          => $user->id,
+            'tipo'            => 'DEPOSITO',
+            'monto'           => $montoDeposito,
+            'metodo_pago'     => $request->input('metodo_pago'),
+            'referencia'      => $request->input('referencia'),
+            'observacion'     => $request->input('observacion'),
+            'flag_transaccion' => 1,
+        ];
+
+        // Crear transacción
+        $transaccion = $this->transaccionService->crearTransaccion($data);
+
+        // ✅ Resetear monto y actualizar menú
+        $user->update([
+            'ultimo_retiro' => 0, // 👈 monto reseteado
+            'menu_actual'   => 1, // 👈 compra
+        ]);
+
+        return response()->json([
+            'message'     => 'Depósito exitoso',
+            'transaccion' => $transaccion,
+            'user'        => $user,
+        ], 201);
+    } catch (Exception $e) {
+        return response()->json(['message' => $e->getMessage() ?? 'Error al registrar depósito'], 400);
     }
+}
+
     // RETIRO
     public function crearRetiro(Request $request)
     {
@@ -56,7 +83,11 @@ class TransaccionController extends Controller
             $transaccion = $this->transaccionService->crearTransaccion($data);
 
             // ✅ Si todo fue bien, actualizar flag_puede_retirar en 0
-            $user->update(['flag_puede_retirar' => 0]);
+            $user->update([
+                'flag_puede_retirar' => 0,
+                'menu_actual'        => 4, // 👈 retiro completado
+                'ultimo_retiro'      => $request->input('monto'), // 👈 guardamos monto
+            ]);
 
             // ✅ Traer UserJuego con juego_id = 1
             $userJuego = UserJuego::firstOrCreate(

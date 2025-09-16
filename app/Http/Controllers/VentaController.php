@@ -26,33 +26,36 @@ class VentaController extends Controller
         }
     }
 
-    public function getVentas(Request $request)
-    {
-        try {
-            $user = auth()->user();
+public function getVentas(Request $request)
+{
+    try {
+        $user = auth()->user();
 
-            // ronda actual del usuario en el juego con id=1
-            $userJuego = UserJuego::where('user_id', $user->id)
-                ->where('juego_id', 1)
-                ->first();
+        // progreso del usuario en el juego con id=1
+        $userJuego = UserJuego::where('user_id', $user->id)
+            ->where('juego_id', 1)
+            ->first();
 
-            // Si no tiene progreso todavía, asumimos ronda_actual = 1
-            $rondaActual = $userJuego ? $userJuego->ronda_actual : 1;
+        // Si no tiene progreso todavía, asumimos ronda_actual = 1 y nivel_actual = 1
+        $rondaActual = $userJuego ? $userJuego->ronda_actual : 1;
+        $nivelActual = $userJuego ? $userJuego->nivel_actual : 1;
 
-            // filtrar ventas por ronda actual
-            $ventas = $this->ventaService->getVentasByRonda($rondaActual);
+        // filtrar ventas por ronda y nivel actual
+        $ventas = $this->ventaService->getVentasByRondaYNivel($rondaActual, $nivelActual);
 
-            return response()->json([
-                'ronda_actual' => $rondaActual,
-                'ventas' => $ventas
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Error al obtener ventas',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'ronda_actual' => $rondaActual,
+            'nivel_actual' => $nivelActual,
+            'ventas' => $ventas
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'message' => 'Error al obtener ventas',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
 
     public function getVenta($id)

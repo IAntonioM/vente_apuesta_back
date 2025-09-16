@@ -20,20 +20,20 @@ class AuthService
         }
 
         // Validar banco activo
-        $banco = Banco::where('id', $data['bancoId'])
-            ->where('estado', true)
-            ->first();
+        // $banco = Banco::where('id', $data['bancoId'])
+        //     ->where('estado', true)
+        //     ->first();
 
-        if (!$banco) {
-            throw new Exception("El banco no existe o está inactivo");
-        }
+        // if (!$banco) {
+        //     throw new Exception("El banco no existe o está inactivo");
+        // }
 
         // Crear usuario
         $user = Userss::create([
             'nombres_apellidos'  => $data['nombres_apellidos'],
             'correo'             => $data['correo'],
-            'nro_cuenta'         => $data['nro_cuenta'],
-            'bancoId'            => $data['bancoId'],
+            // 'nro_cuenta'         => $data['nro_cuenta'],
+            // 'bancoId'            => $data['bancoId'],
             'cel'                => $data['cel'],
             'password'           => Hash::make($data['password']),
             'flag_ronda_1'       => 1, // valor por defecto
@@ -48,7 +48,7 @@ class AuthService
         );
 
         // Bono de registro
-        $saldo->saldo += 30;
+        $saldo->saldo += 10;
         $saldo->save();
 
         // Registrar transacción de bono

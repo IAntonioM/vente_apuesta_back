@@ -14,7 +14,11 @@ class Compra extends Model
         'transaccionId',
         'cantidad',
         'fecha',
+        'monto_compra',   // 👈 nuevo
+        'monto_ganancia', // 👈 nuevo
+        'monto_venta',    // 👈 nuevo
     ];
+
 
     protected $casts = [
         'fecha' => 'datetime',

@@ -24,13 +24,22 @@ class CompraController extends Controller
                 'cantidad' => $request->input('cantidad')
             ]);
 
-            return response()->json($compra, 201);
+            $user = $request->user();
+            $user->menu_actual = 2; // juego
+            $user->estado_partida_comodin = 0; // juego
+            $user->save();
+
+            return response()->json([
+                'compra' => $compra,
+                'user'   => $user
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage() ?? 'Error al registrar compra'
             ], 400);
         }
     }
+
 
     public function misCompras(Request $request)
     {

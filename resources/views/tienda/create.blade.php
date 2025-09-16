@@ -54,7 +54,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cantidad" class="form-label">Cantidad en Stock</label>
                                     <input type="number"
@@ -70,21 +70,54 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ganancia" class="form-label">Ganancia</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number"
+                                               step="0.01"
+                                               min="0"
+                                               class="form-control @error('ganancia') is-invalid @enderror"
+                                               id="ganancia"
+                                               name="ganancia"
+                                               value="{{ old('ganancia') }}">
+                                        @error('ganancia')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="n_ronda" class="form-label">Número de Ronda</label>
-                                    <select class="form-select @error('n_ronda') is-invalid @enderror"
-                                            id="n_ronda"
-                                            name="n_ronda"
-                                            required>
-                                        <option value="">Seleccionar ronda</option>
-                                        @for ($i = 1; $i <= 15; $i++)
-                                            <option value="{{ $i }}" {{ old('n_ronda') == $i ? 'selected' : '' }}>
-                                                Ronda {{ $i }}
-                                            </option>
-                                        @endfor
-                                    </select>
+                                    <input type="number"
+                                           min="1"
+                                           class="form-control @error('n_ronda') is-invalid @enderror"
+                                           id="n_ronda"
+                                           name="n_ronda"
+                                           value="{{ old('n_ronda') }}"
+                                           required>
                                     @error('n_ronda')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="nivel" class="form-label">Nivel</label>
+                                    <input type="number"
+                                           min="1"
+                                           class="form-control @error('nivel') is-invalid @enderror"
+                                           id="nivel"
+                                           name="nivel"
+                                           value="{{ old('nivel', 1) }}"
+                                           required>
+                                    @error('nivel')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

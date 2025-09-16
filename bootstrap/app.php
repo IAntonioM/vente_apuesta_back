@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Middleware\ValidarMenuCompra;
+use App\Http\Middleware\ValidarMenuDeposito;
+use App\Http\Middleware\ValidarMenuJuego;
+use App\Http\Middleware\ValidarMenuRetiro;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+         $middleware->alias([
+            'menu.compra' => ValidarMenuCompra::class,
+            'menu.juego' => ValidarMenuJuego::class,
+            'menu.retiro' => ValidarMenuRetiro::class,
+            'menu.deposito' => ValidarMenuDeposito::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

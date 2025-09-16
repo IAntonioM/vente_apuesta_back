@@ -26,17 +26,26 @@ class TiendaController extends Controller
             $query->where('n_ronda', $request->n_ronda);
         }
 
+        // Filtro por nivel
+        if ($request->filled('nivel')) {
+            $query->where('nivel', $request->nivel);
+        }
+
         // Filtro por flag_mayor
         if ($request->filled('flag_mayor')) {
             $query->where('flag_mayor', $request->flag_mayor === '1');
         }
 
-        $productos = $query->orderBy('created_at', 'desc')->get();
+        // Ordenar por n_ronda ASC, nivel ASC como en tu consulta SQL
+        $productos = $query->orderBy('n_ronda', 'asc')
+                          ->orderBy('nivel', 'asc')
+                          ->get();
 
-        // Obtener todas las rondas disponibles para el filtro
+        // Obtener todas las rondas y niveles disponibles para los filtros
         $rondas = Venta::distinct()->orderBy('n_ronda')->pluck('n_ronda');
+        $niveles = Venta::distinct()->orderBy('nivel')->pluck('nivel');
 
-        return view('tienda.index', compact('productos', 'rondas'));
+        return view('tienda.index', compact('productos', 'rondas', 'niveles'));
     }
 
     /**
@@ -56,8 +65,10 @@ class TiendaController extends Controller
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
             'cantidad' => 'required|integer|min:0',
-            'n_ronda' => 'required|integer|min:1|max:15',
+            'n_ronda' => 'required|integer|min:1',
+            'nivel' => 'required|integer|min:1',
             'flag_mayor' => 'required|boolean',
+            'ganancia' => 'nullable|numeric|min:0',
             'imagen' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -73,7 +84,9 @@ class TiendaController extends Controller
             'precio' => $request->precio,
             'cantidad' => $request->cantidad,
             'n_ronda' => $request->n_ronda,
+            'nivel' => $request->nivel,
             'flag_mayor' => $request->flag_mayor,
+            'ganancia' => $request->ganancia,
             'img_url' => $imagePath // Guarda "images/xxx.png"
         ]);
 
@@ -105,8 +118,10 @@ class TiendaController extends Controller
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
             'cantidad' => 'required|integer|min:0',
-            'n_ronda' => 'required|integer|min:1|max:15',
+            'n_ronda' => 'required|integer|min:1',
+            'nivel' => 'required|integer|min:1',
             'flag_mayor' => 'required|boolean',
+            'ganancia' => 'nullable|numeric|min:0',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -127,7 +142,9 @@ class TiendaController extends Controller
             'precio' => $request->precio,
             'cantidad' => $request->cantidad,
             'n_ronda' => $request->n_ronda,
+            'nivel' => $request->nivel,
             'flag_mayor' => $request->flag_mayor,
+            'ganancia' => $request->ganancia,
             'img_url' => $imagePath // Solo guarda "images/nombre.png"
         ]);
 

@@ -20,7 +20,9 @@ class Userss extends Authenticatable
         'rol',
         'bancoId',
         'flag_ronda_1',       // nuevo campo
-        'flag_puede_retirar'  // nuevo campo
+        'flag_puede_retirar',  // nuevo campo
+        'menu_actual',         // 👈 nuevo campo
+        'ultimo_retiro',       // 👈 nuevo campo
     ];
 
     protected $hidden = [

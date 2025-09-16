@@ -46,7 +46,6 @@ Route::get('/generate-storage-link', function () {
         } else {
             return 'No se pudo crear el enlace simbólico. Problema de permisos.';
         }
-
     } catch (Exception $e) {
         // Si falla, intentar con artisan
         try {
@@ -57,7 +56,6 @@ Route::get('/generate-storage-link', function () {
             }
 
             return 'Error con artisan: ' . $e->getMessage();
-
         } catch (Exception $e2) {
             return 'Error: ' . $e2->getMessage();
         }
@@ -68,7 +66,7 @@ Route::get('/generate-storage-link', function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     // Compras
-    Route::post('/compras', [CompraController::class, 'crearCompra']);
+    //Route::post('/compras', [CompraController::class, 'crearCompra']);
     Route::get('/compras', [CompraController::class, 'misCompras']);
 
     // Juegos
@@ -85,13 +83,33 @@ Route::middleware('auth:sanctum')->group(function () {
     // WALLET (saldo y transacciones)
     Route::get('/wallet/saldo', [SaldoController::class, 'obtenerSaldo']);
     Route::get('/wallet/transacciones', [TransaccionController::class, 'misTransacciones']);
-    Route::post('/wallet/deposito', [TransaccionController::class, 'crearDeposito']);
-    Route::post('/wallet/retiro', [TransaccionController::class, 'crearRetiro']);
+    //Route::post('/wallet/deposito', [TransaccionController::class, 'crearDeposito']);
+    //Route::post('/wallet/retiro', [TransaccionController::class, 'crearRetiro']);
 
     // USER JUEGO
     Route::get('/user-juego/{juego_id}', [UserJuegoController::class, 'obtenerNivel']);
-    Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
+    //Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
     Route::get('/userJuego', [UserJuegoController::class, 'listarNivelesUsuario']);
+});
+
+// En routes/api.php
+Route::middleware(['auth:sanctum', 'menu.compra'])->group(function () {
+    Route::post('/compras', [CompraController::class, 'crearCompra']);
+});
+
+// En routes/api.php
+Route::middleware(['auth:sanctum', 'menu.juego'])->group(function () {
+    Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
+});
+
+// En routes/api.php
+Route::middleware(['auth:sanctum', 'menu.retiro'])->group(function () {
+    Route::post('/wallet/retiro', [TransaccionController::class, 'crearRetiro']);
+});
+
+// En routes/api.php
+Route::middleware(['auth:sanctum', 'menu.deposito'])->group(function () {
+    Route::post('/wallet/deposito', [TransaccionController::class, 'crearDeposito']);
 });
 
 

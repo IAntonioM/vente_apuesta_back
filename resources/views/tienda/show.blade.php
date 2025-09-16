@@ -60,11 +60,41 @@
                                             <td class="text-success fw-bold">${{ number_format($tienda->precio, 2) }}</td>
                                         </tr>
                                         <tr>
+                                            <td class="fw-bold">Ganancia:</td>
+                                            <td>
+                                                @if($tienda->ganancia)
+                                                    <span class="text-warning fw-bold">${{ number_format($tienda->ganancia, 2) }}</span>
+                                                @else
+                                                    <span class="text-muted">No especificada</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td class="fw-bold">Stock:</td>
                                             <td>
                                                 <span
                                                     class="badge {{ $tienda->cantidad > 0 ? 'bg-success' : 'bg-danger' }} fs-6">
                                                     {{ $tienda->cantidad }} unidades
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Ronda:</td>
+                                            <td>
+                                                <span class="badge bg-primary fs-6">Ronda {{ $tienda->n_ronda }}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Nivel:</td>
+                                            <td>
+                                                <span class="badge bg-secondary fs-6">Nivel {{ $tienda->nivel }}</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Mayor a su Ronda:</td>
+                                            <td>
+                                                <span class="badge {{ $tienda->flag_mayor ? 'bg-warning' : 'bg-info' }} fs-6">
+                                                    {{ $tienda->flag_mayor ? 'Si' : 'No' }}
                                                 </span>
                                             </td>
                                         </tr>
