@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,19 +9,21 @@
     {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             display: flex;
             min-height: 100vh;
             flex-direction: row;
         }
+
         .sidebar {
             width: 250px;
             background-color: #343a40;
             color: white;
             min-height: 100vh;
         }
+
         .content {
             flex-grow: 1;
             background-color: #f8f9fa;
@@ -28,6 +31,7 @@
         }
     </style>
 </head>
+
 <body>
     {{-- Sidebar --}}
     @include('partials.sidebar')
@@ -41,8 +45,10 @@
             @yield('content')
         </main>
     </div>
+    @stack('scripts')
 
     {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -105,9 +105,9 @@ class ValidarMenuRetiro
         try {
             // Buscar el siguiente nivel/ronda
             $siguienteNivel = NivelJuego::where('juegoId', $userJuego->juego_id)
-                ->where(function($query) use ($userJuego) {
+                ->where(function ($query) use ($userJuego) {
                     $query->where('ronda', '>', $userJuego->ronda_actual)
-                        ->orWhere(function($subQuery) use ($userJuego) {
+                        ->orWhere(function ($subQuery) use ($userJuego) {
                             $subQuery->where('ronda', '=', $userJuego->ronda_actual)
                                 ->where('nivel', '>', $userJuego->nivel_actual);
                         });
@@ -117,17 +117,30 @@ class ValidarMenuRetiro
                 ->first();
 
             if ($siguienteNivel) {
-                // HAY siguiente nivel/ronda - avanzar
-                $this->userJuegoService->crearOActualizarNivel([
+                // 🔹 Verificar si hay cambio de ronda
+                $cambioDeRonda = $siguienteNivel->ronda > $userJuego->ronda_actual;
+
+                // 🔹 Preparar datos para la actualización
+                $datosActualizacion = [
                     'user_id'      => $user->id,
                     'juego_id'     => $userJuego->juego_id,
                     'nivel_actual' => $siguienteNivel->nivel,
                     'ronda_actual' => $siguienteNivel->ronda,
-                ]);
+                ];
+
+                // 🔹 Solo agregar f_ronda_update si hubo cambio de ronda
+                if ($cambioDeRonda) {
+                    $datosActualizacion['f_ronda_update'] = now();
+                }
+
+                // HAY siguiente nivel/ronda - avanzar
+                $this->userJuegoService->crearOActualizarNivel($datosActualizacion);
 
                 Log::info("Usuario {$user->id} avanzó automáticamente por retiro TODO o NADA", [
                     'nivel_anterior' => "{$userJuego->ronda_actual}-{$userJuego->nivel_actual}",
-                    'nivel_nuevo' => "{$siguienteNivel->ronda}-{$siguienteNivel->nivel}"
+                    'nivel_nuevo' => "{$siguienteNivel->ronda}-{$siguienteNivel->nivel}",
+                    'cambio_de_ronda' => $cambioDeRonda,
+                    'f_ronda_update_actualizada' => $cambioDeRonda
                 ]);
             }
         } catch (\Exception $e) {

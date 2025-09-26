@@ -13,6 +13,7 @@ class UserJuego extends Model
         'juego_id',
         'nivel_actual',
         'ronda_actual', // 👈 agrega esto
+        'f_ronda_update'
     ];
 
     public function usuario()

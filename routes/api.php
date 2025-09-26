@@ -7,6 +7,7 @@ use App\Http\Controllers\CompraController;
 use App\Http\Controllers\JuegoController;
 use App\Http\Controllers\PartidaController;
 use App\Http\Controllers\SaldoController;
+use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\UserJuegoController;
 use App\Http\Controllers\VentaController;
@@ -63,7 +64,7 @@ Route::get('/generate-storage-link', function () {
 });
 
 // Rutas protegidas con middleware auth:sanctum
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'juego.tiempoRonda'])->group(function () {
 
     // Compras
     //Route::post('/compras', [CompraController::class, 'crearCompra']);
@@ -90,25 +91,30 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user-juego/{juego_id}', [UserJuegoController::class, 'obtenerNivel']);
     //Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
     Route::get('/userJuego', [UserJuegoController::class, 'listarNivelesUsuario']);
+
+    Route::get('/solicitudes', [SolicitudController::class, 'listarPorUsuario']);
+
+
+    Route::get('/tiempo-ronda', [UserJuegoController::class, 'obtenerTiempoRestante']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum', 'menu.compra'])->group(function () {
+Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.compra'])->group(function () {
     Route::post('/compras', [CompraController::class, 'crearCompra']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum', 'menu.juego'])->group(function () {
+Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.juego'])->group(function () {
     Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum', 'menu.retiro'])->group(function () {
+Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.retiro'])->group(function () {
     Route::post('/wallet/retiro', [TransaccionController::class, 'crearRetiro']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum', 'menu.deposito'])->group(function () {
+Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.deposito'])->group(function () {
     Route::post('/wallet/deposito', [TransaccionController::class, 'crearDeposito']);
 });
 

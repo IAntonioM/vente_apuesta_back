@@ -4,6 +4,7 @@ use App\Http\Middleware\ValidarMenuCompra;
 use App\Http\Middleware\ValidarMenuDeposito;
 use App\Http\Middleware\ValidarMenuJuego;
 use App\Http\Middleware\ValidarMenuRetiro;
+use App\Http\Middleware\ValidarTiempoRonda;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'menu.juego' => ValidarMenuJuego::class,
             'menu.retiro' => ValidarMenuRetiro::class,
             'menu.deposito' => ValidarMenuDeposito::class,
+            'juego.tiempoRonda' => ValidarTiempoRonda::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

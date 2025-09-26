@@ -9,6 +9,7 @@ class Transaccion extends Model
     protected $table = 'transaccions';
 
     protected $fillable = [
+        'solicitudId',
         'userId',
         'tipo',
         'monto',
@@ -27,5 +28,9 @@ class Transaccion extends Model
     public function usuario()
     {
         return $this->belongsTo(Userss::class, 'userId');
+    }
+    public function solicitud()
+    {
+        return $this->belongsTo(Solicitud::class, 'solicitudId');
     }
 }

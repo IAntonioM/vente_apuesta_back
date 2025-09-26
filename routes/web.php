@@ -3,6 +3,7 @@
 use App\Http\ControllersWeb\LoginController;
 use App\Http\ControllersWeb\PrincipalController;
 use App\Http\ControllersWeb\RegisterController;
+use App\Http\ControllersWeb\TerminosController;
 use App\Http\ControllersWeb\TiendaController;
 use App\Http\ControllersWeb\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ Route::get('/', [LoginController::class, 'showLoginForm'])->name('home');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [LoginController::class, 'login'])->name('login');
 
+Route::get('/terminos-condiciones', [TerminosController::class, 'showTerminosView'])->name('terminos');
 
 // Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

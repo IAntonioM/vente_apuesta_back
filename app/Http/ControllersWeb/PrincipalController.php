@@ -3,15 +3,19 @@
 namespace App\Http\ControllersWeb;
 
 use App\Http\Controllers\Controller;
+use App\Models\Solicitud;
 use Illuminate\Http\Request;
 use App\Models\Transaccion;
 use App\Models\Userss;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PrincipalController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Transaccion::with(['usuario', 'usuario.banco']);
+        // Incluir la relación con solicitud
+        $query = Transaccion::with(['usuario', 'usuario.banco', 'solicitud', 'solicitud.tipo', 'solicitud.estado']);
 
         // Filtro por tipo de transacción
         if ($request->filled('tipo') && $request->tipo !== 'TODOS') {
@@ -42,6 +46,13 @@ class PrincipalController extends Controller
             $query->where('estado', $request->estado);
         }
 
+        // Filtro por estado de solicitud
+        if ($request->filled('estado_solicitud') && $request->estado_solicitud !== 'TODOS') {
+            $query->whereHas('solicitud', function ($q) use ($request) {
+                $q->where('estado_solicitud', $request->estado_solicitud);
+            });
+        }
+
         // Filtro por fecha desde
         if ($request->filled('fecha_desde')) {
             $query->whereDate('created_at', '>=', $request->fecha_desde);
@@ -57,8 +68,10 @@ class PrincipalController extends Controller
 
         // Paginación
         $transacciones = $query->paginate(15)->withQueryString();
-
-        // Estadísticas básicas (puedes aplicar los mismos filtros de fecha aquí si lo deseas)
+            Log::info("Query SQL generado:", [
+        'data' => $transacciones
+    ]);
+        // Estadísticas básicas
         $statsQuery = Transaccion::query();
 
         // Aplicar filtros de fecha a las estadísticas también
@@ -89,19 +102,65 @@ class PrincipalController extends Controller
         ));
     }
 
-    public function aprobar($id)
+    /**
+     * Actualizar estado de solicitud
+     */
+    public function actualizarSolicitud(Request $request, $id)
     {
-        $transaccion = Transaccion::findOrFail($id);
-        $transaccion->update(['estado' => 'APROBADO']);
+        $request->validate([
+            'estado_solicitud' => 'required|in:1,2,3,4', // 1=Pendiente, 2=Aprobada, 3=Rechazada, 4=En Proceso
+            'motivo_rechazo' => 'required_if:estado_solicitud,3|nullable|string|max:500'
+        ]);
 
-        return back()->with('success', 'Transacción aprobada correctamente');
-    }
+        try {
+            DB::beginTransaction();
 
-    public function rechazar($id)
-    {
-        $transaccion = Transaccion::findOrFail($id);
-        $transaccion->update(['estado' => 'RECHAZADO']);
+            $solicitud = Solicitud::findOrFail($id);
 
-        return back()->with('success', 'Transacción rechazada correctamente');
+            // Actualizar la solicitud
+            $solicitud->estado_solicitud = $request->estado_solicitud;
+
+            if ($request->estado_solicitud == 3) { // Si es rechazada
+                $solicitud->motivo_rechazo = $request->motivo_rechazo;
+            } else {
+                $solicitud->motivo_rechazo = null;
+            }
+
+            $solicitud->save();
+
+            // Si la solicitud tiene una transacción asociada, actualizar su estado también
+            if ($solicitud->transaccion) {
+                $transaccion = $solicitud->transaccion;
+
+                switch ($request->estado_solicitud) {
+                    case '2': // Aprobada
+                        $transaccion->estado = 'APROBADO';
+                        break;
+                    case '3': // Rechazada
+                        $transaccion->estado = 'RECHAZADO';
+                        break;
+                    case '1': // Pendiente
+                    case '4': // En Proceso
+                        $transaccion->estado = 'PENDIENTE';
+                        break;
+                }
+
+                $transaccion->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Solicitud actualizada correctamente'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar la solicitud: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
