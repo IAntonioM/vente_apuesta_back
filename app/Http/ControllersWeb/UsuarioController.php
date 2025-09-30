@@ -5,7 +5,11 @@ namespace App\Http\ControllersWeb;
 use App\Http\Controllers\Controller;
 use App\Models\Userss;
 use App\Models\Banco;
+use App\Models\SaldoUsuario;
+use App\Models\Solicitud;
+use App\Models\Transaccion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
@@ -119,5 +123,70 @@ class UsuarioController extends Controller
         $usuario->update($updateData);
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    public function editSaldoUser(Userss $usuario, $solicitud = null)
+    {
+        $usuario->load('banco', 'saldoUsuario');
+
+        $solicitudData = null;
+        if ($solicitud) {
+            $solicitudData = Solicitud::with('banco')->find($solicitud);
+        }
+
+        return view('usuarios.editSaldo', compact('usuario', 'solicitudData'));
+    }
+
+    /**
+     * Update user balance by creating a transaction.
+     */
+    public function updateSaldoUser(Request $request, Userss $usuario)
+    {
+        $request->validate([
+            'tipo' => 'required|in:DEPOSITO,RETIRO',
+            'monto' => 'required|numeric|min:0.01',
+            'referencia' => 'nullable|string|max:255',
+            'observacion' => 'nullable|string|max:500',
+            'metodo_pago' => 'nullable|string|max:255'
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Crear la transacción
+            Transaccion::create([
+                'solicitudId' => null,
+                'tipo' => $request->tipo,
+                'monto' => $request->monto,
+                'estado' => 'APROBADO',
+                'flag_transaccion' => 1,
+                'referencia' => $request->referencia,
+                'observacion' => $request->observacion,
+                'metodo_pago' => $request->metodo_pago,
+                'userId' => $usuario->id
+            ]);
+
+            // Obtener o crear el saldo del usuario
+            $saldoUsuario = SaldoUsuario::firstOrCreate(
+                ['userId' => $usuario->id],
+                ['saldo' => 0]
+            );
+
+            // Actualizar el saldo según el tipo de transacción
+            if ($request->tipo === 'DEPOSITO') {
+                $saldoUsuario->saldo += $request->monto;
+            } else { // RETIRO
+                $saldoUsuario->saldo -= $request->monto;
+            }
+
+            $saldoUsuario->save();
+
+            DB::commit();
+
+            return redirect()->route('usuarios.index')->with('success', 'Saldo actualizado exitosamente.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Error al actualizar el saldo: ' . $e->getMessage());
+        }
     }
 }

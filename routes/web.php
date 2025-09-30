@@ -3,6 +3,7 @@
 use App\Http\ControllersWeb\LoginController;
 use App\Http\ControllersWeb\PrincipalController;
 use App\Http\ControllersWeb\RegisterController;
+use App\Http\ControllersWeb\SolicitudesController;
 use App\Http\ControllersWeb\TerminosController;
 use App\Http\ControllersWeb\TiendaController;
 use App\Http\ControllersWeb\UsuarioController;
@@ -19,6 +20,10 @@ Route::post('/login', [LoginController::class, 'login'])->name('login');
 
 Route::get('/terminos-condiciones', [TerminosController::class, 'showTerminosView'])->name('terminos');
 
+Route::get('/editar-terminos', [TerminosController::class, 'showTerminosView'])->name('terminos');
+
+
+
 // Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -26,6 +31,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/principal', [PrincipalController::class, 'index'])->name('principal');
     Route::patch('/principal/transacciones/{id}/aprobar', [PrincipalController::class, 'aprobar'])->name('transacciones.aprobar');
     Route::patch('/principal/transacciones/{id}/rechazar', [PrincipalController::class, 'rechazar'])->name('transacciones.rechazar');
+
     Route::resource('tienda', TiendaController::class);
+
     Route::resource('usuarios', UsuarioController::class);
+    Route::get('usuarios/{usuario}/saldo/{solicitud?}', [UsuarioController::class, 'editSaldoUser'])
+        ->name('usuarios.editSaldoUser');
+
+    Route::put('usuarios/{usuario}/saldo', [UsuarioController::class, 'updateSaldoUser'])->name('usuarios.updateSaldoUser');
+
+    Route::resource('solicitud', SolicitudesController::class);
+    Route::get('/solicitudes/{solicitud}/descargar-evidencia', [SolicitudesController::class, 'descargarEvidencia'])
+        ->name('solicitudes.descargar-evidencia');
 });

@@ -260,28 +260,28 @@
                                                     @case(1)
                                                         <span class="badge bg-warning text-dark">
                                                             <i class="fas fa-clock"></i>
-                                                            {{ $transaccion->solicitud->estado->nombre }}
+                                                            {{ $transaccion->solicitud->estado->nombre  ?? ''}}
                                                         </span>
                                                     @break
 
                                                     @case(2)
                                                         <span class="badge bg-success">
                                                             <i class="fas fa-check"></i>
-                                                            {{ $transaccion->solicitud->estado->nombre }}
+                                                            {{ $transaccion->solicitud->estado->nombre   ?? ''}}
                                                         </span>
                                                     @break
 
                                                     @case(3)
                                                         <span class="badge bg-danger">
                                                             <i class="fas fa-times"></i>
-                                                            {{ $transaccion->solicitud->estado->nombre }}
+                                                            {{ $transaccion->solicitud->estado->nombre   ?? ''}}
                                                         </span>
                                                     @break
 
                                                     @case(4)
                                                         <span class="badge bg-info">
                                                             <i class="fas fa-cog fa-spin"></i>
-                                                            {{ $transaccion->solicitud->estado->nombre }}
+                                                            {{ $transaccion->solicitud->estado->nombre   ?? ''}}
                                                         </span>
                                                     @break
                                                 @endswitch

@@ -92,30 +92,32 @@ Route::middleware(['auth:sanctum', 'juego.tiempoRonda'])->group(function () {
     //Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
     Route::get('/userJuego', [UserJuegoController::class, 'listarNivelesUsuario']);
 
-    Route::get('/solicitudes', [SolicitudController::class, 'listarPorUsuario']);
+    Route::get('/mis-solicitudes', [SolicitudController::class, 'listarPorUsuario']);
 
 
     Route::get('/tiempo-ronda', [UserJuegoController::class, 'obtenerTiempoRestante']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.compra'])->group(function () {
+Route::middleware(['auth:sanctum', 'juego.tiempoRonda', 'menu.compra'])->group(function () {
     Route::post('/compras', [CompraController::class, 'crearCompra']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.juego'])->group(function () {
+Route::middleware(['auth:sanctum', 'juego.tiempoRonda', 'menu.juego'])->group(function () {
     Route::post('/userJuego', [UserJuegoController::class, 'guardarNivel']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.retiro'])->group(function () {
-    Route::post('/wallet/retiro', [TransaccionController::class, 'crearRetiro']);
+Route::middleware(['auth:sanctum', 'juego.tiempoRonda', 'menu.retiro'])->group(function () {
+    // Route::post('/wallet/retiro', [TransaccionController::class, 'crearRetiro']);
+    Route::post('/wallet/retiro', [TransaccionController::class, 'crearSolicitudRetiro']);
 });
 
 // En routes/api.php
-Route::middleware(['auth:sanctum','juego.tiempoRonda', 'menu.deposito'])->group(function () {
-    Route::post('/wallet/deposito', [TransaccionController::class, 'crearDeposito']);
+Route::middleware(['auth:sanctum', 'juego.tiempoRonda', 'menu.deposito'])->group(function () {
+    // Route::post('/wallet/deposito', [TransaccionController::class, 'crearDeposito']);
+    Route::post('/wallet/deposito', [TransaccionController::class, 'crearSolicitudDeposito']);
 });
 
 

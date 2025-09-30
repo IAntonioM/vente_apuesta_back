@@ -10,14 +10,14 @@ class Transaccion extends Model
 
     protected $fillable = [
         'solicitudId',
-        'userId',
         'tipo',
         'monto',
         'estado',
-        'metodo_pago',
+        'flag_transaccion',
         'referencia',
         'observacion',
-        'flag_transaccion'  // Campo agregado
+        'metodo_pago',
+        'userId',
     ];
 
     protected $casts = [

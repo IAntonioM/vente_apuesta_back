@@ -15,7 +15,7 @@ class PrincipalController extends Controller
     public function index(Request $request)
     {
         // Incluir la relación con solicitud
-        $query = Transaccion::with(['usuario', 'usuario.banco', 'solicitud', 'solicitud.tipo', 'solicitud.estado']);
+        $query = Transaccion::with(['usuario', 'usuario.banco', 'solicitud', 'solicitud.tipoSolicitud', 'solicitud.estadoSolicitud']);
 
         // Filtro por tipo de transacción
         if ($request->filled('tipo') && $request->tipo !== 'TODOS') {

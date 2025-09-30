@@ -109,6 +109,10 @@
                                                         class="btn btn-warning btn-sm text-dark" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    <a href="{{ route('usuarios.editSaldoUser', $usuario) }}"|
+                                                        class="btn btn-sm btn-success" title="Editar_saldo">
+                                                        <i class="fas fa-money-bill-wave"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>

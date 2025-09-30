@@ -12,8 +12,8 @@ class SolicitudService
     public function listarPorUsuario(int $userId, int $perPage = 7, int $page = 1)
     {
         return Solicitud::where('user_id', $userId)
-            ->with('estado')
-            ->with('tipo')
+            ->with('estadoSolicitud')
+            ->with('tipoSolicitud')
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
         // 🔹 forzamos a usar page y per_page enviados

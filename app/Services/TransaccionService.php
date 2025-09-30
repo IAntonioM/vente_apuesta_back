@@ -63,31 +63,31 @@ class TransaccionService
             $solicitud = null; // inicializamos
 
             // 📌 Si es RETIRO, también creamos la solicitud
-            if ($flag_crearSolicitud == 1) {
-                if ($tipo === 'RETIRO') {
-                    $dataSolicitud = [
-                        'user_id'          => $userId,
-                        'tipo_solicitud'   => 1, // 1 = RETIRO
-                        'estado_solicitud' => 1, // 1 = PENDIENTE
-                        'descripcion'      => "Solicitud de retiro por S/ {$monto}",
-                        'motivo_rechazo'   => null,
-                        'monto'            => $monto,
-                    ];
-                    $solicitud = Solicitud::create($dataSolicitud);
-                }
+            // if ($flag_crearSolicitud == 1) {
+            //     if ($tipo === 'RETIRO') {
+            //         $dataSolicitud = [
+            //             'user_id'          => $userId,
+            //             'tipo_solicitud'   => 1, // 1 = RETIRO
+            //             'estado_solicitud' => 1, // 1 = PENDIENTE
+            //             'descripcion'      => "Solicitud de retiro por S/ {$monto}",
+            //             'motivo_rechazo'   => null,
+            //             'monto'            => $monto,
+            //         ];
+            //         $solicitud = Solicitud::create($dataSolicitud);
+            //     }
 
-                if ($tipo === 'DEPOSITO') {
-                    $dataSolicitud = [
-                        'user_id'          => $userId,
-                        'tipo_solicitud'   => 2, // 2 = DEPOSITO
-                        'estado_solicitud' => 2, // 2 = CONFIRMADO / EN PROCESO
-                        'descripcion'      => "Solicitud de depósito por S/ {$monto}",
-                        'motivo_rechazo'   => null,
-                        'monto'            => $monto,
-                    ];
-                    $solicitud = Solicitud::create($dataSolicitud);
-                }
-            }
+            //     if ($tipo === 'DEPOSITO') {
+            //         $dataSolicitud = [
+            //             'user_id'          => $userId,
+            //             'tipo_solicitud'   => 2, // 2 = DEPOSITO
+            //             'estado_solicitud' => 2, // 2 = CONFIRMADO / EN PROCESO
+            //             'descripcion'      => "Solicitud de depósito por S/ {$monto}",
+            //             'motivo_rechazo'   => null,
+            //             'monto'            => $monto,
+            //         ];
+            //         $solicitud = Solicitud::create($dataSolicitud);
+            //     }
+            // }
             if ($solicitud) {
                 $transaccion->solicitudId = $solicitud->id;
                 $transaccion->save();
